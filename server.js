@@ -20,11 +20,11 @@ router.get('/', function(req, res, next) {
     res.render('index.html');
 });
 
-router.get('/book', function(req, res, next) {
+router.post('/book', function(req, res, next) {
     var params = req.params;
 
-    console.log('booking...');
-    
+    console.log('booking...', req.body);
+
     // res.render('index.html');
 });
 

@@ -18,6 +18,10 @@
     // this function reurn the source
     // [X, y]
     function getCoordinates(data, start, end) {
+        // regular expression to retrieve the src and dst
+        // co-ordinate.
+        var regex = /![1|2]d[+,-]*[0-9]+.[0-9]+/g
+
         return processCoOrdinate(data.match(regex).slice(start, end));
     }
 
@@ -35,9 +39,23 @@
         return output;
     }
 
-    // regular expression to retrieve the src and dst
-    // co-ordinate.
-    var regex = /![1|2]d[+,-]*[0-9]+.[0-9]+/g
-    console.log(window.location.href);
+    function bookOla() {
+        $.ajax({
+            url: '/book',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ paramUrl: window.location.href }),
+            success: function(data) {
+                console.log('succes: ' + data);
+            }
+        });
+    }
 
+    window.onload = function() {
+        var $bookButton = $('.ola-btn');
+        $bookButton.on('click', bookOla);
+    }
 })();
