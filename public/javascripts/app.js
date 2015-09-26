@@ -18,9 +18,6 @@
     // this function reurn the source
     // [X, y]
     function getCoordinates(data, start, end) {
-        // regular expression to retrieve the src and dst
-        // co-ordinate.
-        var regex = /![1|2]d[+,-]*[0-9]+.[0-9]+/g
 
         return processCoOrdinate(data.match(regex).slice(start, end));
     }
@@ -40,6 +37,8 @@
     }
 
     function bookOla() {
+        var obj = window.location.search;
+        console.log('iframe obj: ', obj);
         $.ajax({
             url: '/book',
             headers: {
@@ -47,7 +46,7 @@
             },
             method: 'POST',
             dataType: 'json',
-            data: JSON.stringify({ paramUrl: window.location.href }),
+            data: JSON.stringify({ obj: obj }),
             success: function(data) {
                 console.log('succes: ' + data);
             }

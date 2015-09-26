@@ -6,10 +6,11 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.1.1",
-    "morgan": "^1.0.0",
     "body-parser": "^1.0.2",
-    "method-override": "^1.0.0"
+    "express": "^4.1.1",
+    "method-override": "^1.0.0",
+    "morgan": "^1.0.0",
+    "request": "^2.64.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
