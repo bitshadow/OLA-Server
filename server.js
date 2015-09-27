@@ -39,9 +39,6 @@ router.post('/estimate', function(req, response, next) {
     var params = getParams(req.body.obj);
 
     // var url = 'http://sandbox­t.olacabs.com/v1/products?pickup_lat=12.950072&pickup_lng=77.642684&category=sedan&drop_lat=12.994847&drop_lng=77.666201';
-    var postData = querystring.stringify({
-        'msg': 'Hello World!'
-    });
 
     var resp = '';
     var options = {
@@ -63,6 +60,7 @@ router.post('/estimate', function(req, response, next) {
         res.on('data', function(chunk) {
             resp += chunk
         });
+
         res.on('end', function() {
             response.send(resp);
             console.log(resp);
@@ -79,13 +77,11 @@ router.post('/estimate', function(req, response, next) {
 
 router.post('/book', function(req, response, next) {
     var params = getParams(req.body.obj);
-    var postData = querystring.stringify({
-        'msg': 'Hello World!'
-    });
+    var resp = '';
     var options = {
         host: 'sandbox-t.olacabs.com',
         port: 80,
-        path: '/v1/bookings/create?pickup_lat=' + params.slat + '&pickup_lng=' + params.slong + '&pickup_mode=NOW&category=sedan',
+        path: '/v1/bookings/create?pickup_lat=' + params.slat + '&pickup_lng=' + params.slong + '&pickup_mode=NOW&category=' + params.category,
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -99,10 +95,10 @@ router.post('/book', function(req, response, next) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function(chunk) {
-            console.log('BODY: ' + chunk);
+            resp += chunk;
         });
         res.on('end', function() {
-            console.log('No more data in response.')
+            response.send(resp);
         });
     });
 
@@ -111,7 +107,7 @@ router.post('/book', function(req, response, next) {
     });
 
     // write data to request body
-    req.write(postData);
+    req.write(resp);
     req.end();
 
 });
