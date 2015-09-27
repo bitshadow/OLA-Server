@@ -5,7 +5,9 @@ var express = require('express'),
     request = require('request'),
     app = express(),
     port = process.env.PORT || 3000,
-    router = express.Router();
+    router = express.Router(),
+    http = require('http'),
+    querystring = require('querystring');
 
 app.use(express.static(__dirname + '/views')); // set the static files location for the static html
 app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
@@ -34,19 +36,45 @@ router.post('/book', function(req, response, next) {
 
     var token = ''
 
-    var url = 'http://sandbox­t.olacabs.com/v1/bookings/create?pickup_lat=' + params.slat + '&pickup_lng=' + params.slong + '&pickup_mode=NOW' + '&category=' + 'sedan';
+    // var url = 'http://sandbox­-t.olacabs.com/v1/bookings/create?pickup_lat=' +  + '&pickup_lng=' + params.slong + '&pickup_mode=NOW' + '&category=' + 'sedan';
+    var url = 'http://sandbox­-t.olacabs.com/v1/bookings/create?pickup_lat='+ params.slat + '&pickup_lng='+ params.slong + '&pickup_mode=NOW&category=sedan'
 
-    request({
+    var postData = querystring.stringify({
+        'msg': 'Hello World!'
+    });
+
+    var options = {
+        host: 'sandbox-t.olacabs.com',
+        port: 80,
+        path: '/v1/bookings/create?pickup_lat=12.954825&pickup_lng=77.642484&pickup_mode=NOW&category=sedan',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'X-APP-TOKEN': ''
-        },
-        uri: url,
-        method: 'GET'
-    }, function(err, res, body) {
-        console.log('cab booked', err, res, body);
-        response.send(res);
+            'X-APP-TOKEN': '',
+            'Authorization': 'Bearer '
+        }
+    };
+
+    var req = http.request(options, function(res) {
+        console.log('STATUS: ' + res.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function(chunk) {
+            console.log('BODY: ' + chunk);
+        });
+        res.on('end', function() {
+            console.log('No more data in response.')
+        })
     });
+
+    req.on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    // write data to request body
+    req.write(postData);
+    req.end();
+
 });
 
 app.use('/', router);
