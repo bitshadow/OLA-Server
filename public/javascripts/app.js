@@ -2,38 +2,33 @@
 (function() {
     var go = 'running!';
 
-    // this function return the src and destination from the url
-    // in the following format:
-    // {
-    // src : [X, Y]
-    // dest : [X, Y]
-    //}
-    function getEndpoints(url) {
-        return {
-            src: getCoordinates(url, 0, 2),
-            dst: getCoordinates(url, 2, 4)
-        };
+    function nano(template, data) {
+      return template.replace(/\{([\w\.]*)\}/g, function(str, key) {
+        var keys = key.split("."), v = data[keys.shift()];
+        for (var i = 0, l = keys.length; i < l; i++) v = v[keys[i]];
+        return (typeof v !== "undefined" && v !== null) ? v : "";
+      });
     }
+    
+    function populateDom(data) {
+        var container = $('.container');
 
-    // this function reurn the source
-    // [X, y]
-    function getCoordinates(data, start, end) {
-      var regex = /![1|2]d[+,-]*[0-9]+.[0-9]+/g;
-        return processCoOrdinate(data.match(regex).slice(start, end));
-    }
+        var $ul = $('<ul class="nav nav-tabs"></ul>');
+        var $content = $('<div class="tab-content"></div>');
+        data.ride_estimate.forEach(function(e, i) {
+            var bool = i == 0;
+            var li = '<li class="' + (bool ? "active" : "") + '"><a data-toggle="tab" id="tab-'+ e.category +'" href="#' + e.category +'"></a></li>';
+            $ul.append(li);
+            var strActive = bool ? "active in" : "";
+            console.log(e);
 
-    // util function to process the co-ordinate
-    // remove the unwanted char
-    function processCoOrdinate(points) {
-        var output = [];
-        for (element in points) {
-            point = points[element];
-            point = point.replace("1d", "");
-            point = point.replace("2d", "");
-            point = point.replace("!", "");
-            output.push(point);
-        }
-        return output;
+            var table = nano('<table id="bookingDetailsTable" style="width:100%;"><tbody><tr><td class="descLabel">Car Category:</td><td class="descValue" id="car_category">{e.category}</td></tr><tr><td class="descLabel">Usage:</td><td class="descValue">City Taxi</td></tr><tr><td class="amtLabel">Min Amount:</td><td class="amtValue">{e.amount_min}</td></tr><tr><td class="distLabel">Total Distance:</td><td class="descValue">{e.distance}</td></tr><tr><td class="distLabel">Max Amount (Rs):</td><td class="descValue">{e.amount_max}</td></tr</tbody></table>', { e: e });
+            var str = '<div id="'+ e.category +'" class="tab-pane fade '+ strActive +'">'+ table +'</div>';
+            $content.append(str);            
+        });
+
+        container.append($content);
+        $ul.insertBefore('.tab-content');
     }
 
     function bookOla() {
@@ -46,26 +41,33 @@
             },
             method: 'POST',
             dataType: 'json',
-            data: JSON.stringify({ obj: obj }),
+            data: JSON.stringify({
+                obj: obj
+            }),
             success: function(data) {
                 console.log('succes: ' + data);
             }
         });
     }
 
-    // set the request to local server to
-    // collect the estimate.
-    // pickup_lat=12.950072&pickup_lng=77.642684&ca  tegory=sedan&drop_lat=12.994847&drop_lng=77.666201
     function getEstimate() {
-      console.log(window.location.search);
-      $.get(
-        '/estimate' + window.location.search,
-        function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
-    });
+        var obj = window.location.search;
+        $.ajax({
+            url: '/estimate',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({
+                obj: obj
+            }),
+            success: function(data) {
+                populateDom(data);
+                // console.log('estimate succes: ', data);
+            }
+        });
     }
-
-    console.log('req sent');
 
     window.onload = function() {
         var $bookButton = $('.ola-btn');
@@ -74,3 +76,4 @@
         getEstimate();
     }
 })();
+    
