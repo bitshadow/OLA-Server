@@ -23,6 +23,18 @@ router.get('/', function(req, res, next) {
     res.render('index.html');
 });
 
+router.get('/estimate', function(req, response, next) {
+
+  // get the parameter for the estimate
+  //car_category = req.param('category');
+  //src_lat = req.param.pick
+
+  console.log("request" + JSON.stringify(req.params));
+  response.send("estimate");
+
+  // if something is
+})
+
 router.post('/book', function(req, response, next) {
     var params = req.params;
 

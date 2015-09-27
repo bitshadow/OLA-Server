@@ -18,7 +18,7 @@
     // this function reurn the source
     // [X, y]
     function getCoordinates(data, start, end) {
-
+      var regex = /![1|2]d[+,-]*[0-9]+.[0-9]+/g;
         return processCoOrdinate(data.match(regex).slice(start, end));
     }
 
@@ -53,8 +53,24 @@
         });
     }
 
+    // set the request to local server to
+    // collect the estimate.
+    // pickup_lat=12.950072&pickup_lng=77.642684&ca  tegory=sedan&drop_lat=12.994847&drop_lng=77.666201
+    function getEstimate() {
+      console.log(window.location.search);
+      $.get(
+        '/estimate' + window.location.search,
+        function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+    }
+
+    console.log('req sent');
+
     window.onload = function() {
         var $bookButton = $('.ola-btn');
         $bookButton.on('click', bookOla);
+
+        getEstimate();
     }
 })();
