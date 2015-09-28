@@ -38,10 +38,6 @@ Open your browser on the address 'localhost:3000'
 
 Done!
 
-Author
------------
-Michael Lancaster
-
 License
 -----------
 MIT
